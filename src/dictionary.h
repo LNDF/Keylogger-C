@@ -1,5 +1,5 @@
-#ifndef INCLUDE_DICTIONARY_H_INCLUDE
-#define INCLUDE_DICTIONARY_H_INCLUDE
+#ifndef INCLUDE_DICTIONARY_H
+#define INCLUDE_DICTIONARY_H
 #pragma once
 #include "keylogger.h"
 
@@ -13,4 +13,4 @@ typedef struct {
 
 void constructKeyDictionary();
 
-#endif // DICTIONARY_H_INCLUDE
+#endif // DICTIONARY_H

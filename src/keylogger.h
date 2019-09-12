@@ -1,5 +1,5 @@
-#ifndef INCLUDE_INPUTMETHOD_H
-#define INCLUDE_INPUTMETHOD_H
+#ifndef INCLUDE_KEYLOGGER_H
+#define INCLUDE_KEYLOGGER_H
 #pragma once
 #include <stdlib.h>
 #include <inttypes.h>
@@ -14,4 +14,4 @@ typedef void (*keyloggerCallback)(char* keyStr);
 void startKeylogger(HINSTANCE hInstance, keyloggerCallback cb);
 
 
-#endif // INCLUDE_INPUTMETHOD_H
+#endif // INCLUDE_KEYLOGGER_H

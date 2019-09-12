@@ -22,9 +22,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="src/keylogger.cpp" />
+		<Unit filename="src/keylogger.c" />
 		<Unit filename="src/keylogger.h" />
-		<Unit filename="src/main.cpp" />
+		<Unit filename="src/main.c" />
 		<Extensions>
 			<code_completion />
 			<envvars />

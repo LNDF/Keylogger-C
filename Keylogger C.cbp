@@ -9,7 +9,7 @@
 			<Target title="Release">
 				<Option output="bin/Release/Keylogger C" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
@@ -22,9 +22,17 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="src/keylogger.c" />
+		<Unit filename="src/dictionary.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/dictionary.h" />
+		<Unit filename="src/keylogger.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/keylogger.h" />
-		<Unit filename="src/main.c" />
+		<Unit filename="src/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

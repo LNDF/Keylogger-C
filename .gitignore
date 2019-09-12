@@ -1,4 +1,5 @@
 /bin
 /obj
+/logs
 *.depend
 *.layout

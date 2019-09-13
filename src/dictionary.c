@@ -24,3 +24,11 @@ void constructKeyDictionary() {
         keyDictionaryEntries++;
     }
 }
+
+char getCharFromCombination(u32 vkCOde, u8 isControlPressed, u8 isAltPressed, u8 isShiftPressed) {
+    for (u8 i = 0; i < keyDictionaryEntries; i++) {
+        keyDictionaryEntry kde = keyDictionary[i];
+        if (kde.vkCode == vkCOde && kde.alt == isAltPressed && kde.control == isControlPressed && kde.shift == isShiftPressed) return kde.chr;
+    }
+    return 0;
+}

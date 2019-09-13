@@ -12,5 +12,6 @@ typedef struct {
 } keyDictionaryEntry;
 
 void constructKeyDictionary();
+char getCharFromCombination(u32 vkCOde, u8 isControlPressed, u8 isAltPressed, u8 isShiftPressed);
 
 #endif // DICTIONARY_H

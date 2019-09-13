@@ -18,7 +18,7 @@ Download [here](https://github.com/LNDF/Keylogger-C/releases)
 * Logs the focused window title.
 * If the user moves the mouse the log will jump to the next line.
 * Most of the key combinations supported.
-* Most of the keyboard layouts supported (I belive, I don't test it in every keyboard layout).
+* Most of the keyboard layouts supported (I belive, I haven't tested it in every keyboard layout).
 * CPU and RAM friendly (0-2% CPU, 500 KB RAM).
 
 ## Credits

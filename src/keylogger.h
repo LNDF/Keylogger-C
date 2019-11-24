@@ -10,9 +10,9 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-#define log(...) {printf("[%s]: ", __FUNCTION__); printf(__VA_ARGS__); printf("\n");}
+#define log(...) {printf("[%s]: ", __FUNCTION__); printf(__VA_ARGS__); printf("\n");} //a definition to use a formated print
 
-typedef void (*keyloggerCallback)(char* keyStr);
+typedef void (*keyloggerCallback)(char* keyStr); //the callback for the keylogger
 void startKeylogger(HINSTANCE hInstance, keyloggerCallback cb);
 
 

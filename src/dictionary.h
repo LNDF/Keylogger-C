@@ -3,12 +3,12 @@
 #pragma once
 #include "keylogger.h"
 
-typedef struct {
-    u8 chr;
-    u32 vkCode;
-    u8 alt;
-    u8 control;
-    u8 shift;
+typedef struct { //a structure to define a key dictionary entry
+    u8 chr; //the character
+    u32 vkCode; //the key code
+    u8 alt; //alt pressed flag
+    u8 control; //control pressed flag
+    u8 shift; //shift pressed flag
 } keyDictionaryEntry;
 
 void constructKeyDictionary();
